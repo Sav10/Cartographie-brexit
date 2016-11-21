@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<head>
+  <title>Les scores du Brexit | Dataplazza</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" /> -->
+  <link rel="stylesheet" href="static/leaflet.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script> -->
+  <script src="static/leaflet.js"></script>
+  <script src="static/underscore-min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js" charset="utf-8"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js"></script>
+  <script src="static/jquery-1.11.3.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script src="static/typeahead.bundle.min.js"></script>
+  <script src="https://d3js.org/d3-color.v0.5.min.js"></script>
+  <script src="https://d3js.org/d3-interpolate.v0.9.min.js"></script>
+  <script src="https://d3js.org/d3-scale-chromatic.v0.3.min.js"></script>
+  <link rel="icon" type="image/png" href="static/rect01.png">
+
+
+
+
+
+  <style>
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    .legend {
+      padding: 0px 0px;
+      font: 10px sans-serif;
+      background: white;
+      background: rgba(255,255,255,0.8);
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      border-radius: 5px;
+    }
+
+    .key path {
+      display: none;
+    }
+    .chart text {
+      font: 11px sans-serif;
+      text-anchor: end;
+    }
+
+    .chart text.parti_name {
+      fill: black;
+      font: 11px sans-serif;
+      text-anchor: start;
+    }
+
+
+    .typeahead,
+    .tt-query,
+    .tt-hint {
+      width: 250px;
+      height: 32px;
+      padding: 5px 12px;
+      font-size: 15px;
+      line-height: 24px;
+      border: 2px solid #ccc;
+      -webkit-border-radius: 8px;
+      -moz-border-radius: 8px;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    .typeahead {
+      background-color: #fff;
+    }
+
+    .typeahead:focus {
+      border: 2px solid #0097cf;
+    }
+
+    .tt-query {
+      -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+      -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    }
+
+    .tt-hint {
+      color: #999
+    }
+
+    .tt-menu {
+      width: 250px;
+      margin: 12px 0;
+      padding: 8px 0;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      -webkit-border-radius: 8px;
+      -moz-border-radius: 8px;
+      border-radius: 8px;
+      -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+      -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+      box-shadow: 0 5px 10px rgba(0,0,0,.2);
+    }
+
+    .tt-suggestion {
+      padding: 3px 20px;
+      font-size: 15px;
+      line-height: 24px;
+    }
+
+    .tt-suggestion:hover {
+      cursor: pointer;
+      color: #fff;
+      background-color: #0097cf;
+    }
+
+    .tt-suggestion.tt-cursor {
+      color: #fff;
+      background-color: #0097cf;
+
+    }
+
+    .tt-suggestion p {
+      margin: 0;
+    }
+
+    .gist {
+      font-size: 14px;
+    }
+
+    /* example specific styles */
+    /* ----------------------- */
+
+    #custom-templates .empty-message {
+      padding: 5px 10px;
+      text-align: center;
+    }
+
+
+    #remote .typeahead-container{
+
+
+    }
+
+    nav.navbar-default{
+
+
+
+    }
+
+    #myNavbar ul a{
+      font-size: 17px;
+      font-weight: bold;
+
+
+
+    }
+
+
+    #myNavbar {
+      top: 28px;
+    }
+
+    #intro_top {
+     top: 0;
+     position: fixed;
+     background-color: #eee;
+     height: 28px;
+     width: 100%;
+     z-index: 500;
+     font-size: 20px;
+   }
+
+   #map{
+    top:  0px;
+    float: left;
+  }
+
+  .leaflet-top {
+    top: 70px;
+  }
+
+  #remote{
+
+    margin-right: 2px;
+    opacity: 0;
+
+  }
+  #bouton_t1_t2{
+
+    margin-top: 7px;
+
+  }
+
+  #right_pannel{
+    margin-top: 74px;
+    margin-left: 2px;
+    float: left;
+
+  }
+
+
+  @media (max-width: 767px) {
+    .leaflet-popup-content-wrapper {
+
+    }
+
+
+
+  }
+
+  font: 10px sans-serif;
+}
+
+        #map-container {
+            height: 1200px;
+            text-align: center;
+            position: relative;
+            margin: 300px 0;
+        }
+
+        #map {
+            overflow: visible;
+/*            margin-left: 20%;
+            margin-top: 15%;*/
+        }
+        #click_to_run {
+            color:#888;
+            width: 600px;
+            font-size: 2em;
+            text-align: center;
+            cursor: pointer;
+            padding-top: 30px;
+        }
+        path.country {
+            stroke: #888;
+            stroke-width: .5;
+        }
+        path.country:hover {
+            stroke: #000;
+        }
+  #right_pannel{
+    position: fixed;
+    top: 5vh;
+    left: 60vw;
+    border: 1px solid #777;
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 15px;
+    background-color: #fafafa;
+    opacity: 0.8;
+  }
+
+  #right_pannel{
+
+  }
+
+#buttons{
+    position: absolute;
+    top: 15vh;
+    left: 38vw;
+  
+}
+
+#buttons button{
+margin-right: 10px;
+
+}
+
+
+#piechart{
+  display: none;
+}
+
+#svg_pie{
+  padding: 4px;
+  margin-left: 40px;
+}
+
+
+
+</style>
+</head>
+
+<body>
+  <p id="intro_top" class="text-center text-primary"><strong>Géographie du Brexit</strong></p>
+  <nav id="myNavbar" class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="container">
+
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbarCollapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <div id="remote" class="navbar-form navbar-right">
+          <div class="typeahead-container">
+            <input class="typeahead" type="text" placeholder="Rechercher une commune">
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="nav navbar-nav">
+          <li ><a href="index.html">Carte du Brexit</a></li>
+          <li  class="active"><a href="cartogram.html">Cartogram</a></li> 
+          <li></li>
+
+        </ul>
+        <!-- /.navbar-collapse -->
+      </div>
+    </div>
+
+  </nav>
+
+    <div id="map-container">
+    <svg id="map"></svg>
+  </div>
+  <div id="right_pannel" style="width: 27%; height: 50vh;">
+   <div class="panel panel-default">
+    <div class="panel-body">
+      <div id="type_etablissement">cliquer sur les régions pour avoir davantage de détails</div>
+      <div><span id="departement"></span></div>
+      <div id="moyenne"></div>
+      <div id="nombre_rapports"></div>
+        <div id="piechart">
+    <svg id="svg_pie"></svg>
+  </div>
+
+    </div>
+  </div>
+  </div>
+      <div id="buttons">
+    <button id="cartogram">cartogram</button>
+    <button id="scalemap">scalemap</button>
+  </div>
+</body>
+
+    <!-- <script src="js/d3.js"></script> -->
+    <script src="static/topojson2.js"></script>
+    <script src="static/cartogram3.js"></script>
+      <script src="https://d3js.org/d3-color.v0.5.min.js"></script>
+  <script src="https://d3js.org/d3-interpolate.v0.9.min.js"></script>
+  <script src="https://d3js.org/d3-scale-chromatic.v0.3.min.js"></script>
+
+
+  <script>
+
+
+
+
+
+
+// var color = d3.scale.category10().domain(all_continents);
+
+var margin = {top: 100, right: 140, bottom: 30, left: 50},
+    width = 1500 - margin.left - margin.right,
+    height = 800 - margin.top - margin.bottom;
+
+var total_height = height + 80;
+var total_width = width + 300;
+
+var height_pie = 120,
+    width_pie = 120;
+
+var parseDate = d3.time.format("%Y").parse;
+
+var g_pie;
+
+var proj = d3.geo.albers()
+    .center([0, 55.4])
+    .rotate([4.4, 0])
+    .parallels([50, 60])
+    .scale(4000)
+    .translate([450, 350]);
+
+var path = d3.geo.path()
+        .projection(null);
+
+var path2 = d3.geo.path()
+        .projection(proj);
+
+
+function color_note(num){
+var new_num = (num - 25) /50;
+  return d3.interpolateRdBu(new_num);
+}
+
+
+radius = Math.min(width_pie, height_pie) / 2;
+
+var color = d3.scale.ordinal()
+    .range(['#1923B4', '#BE0014']);
+
+// #313695, #A50026
+// #1923B4, #BE0014
+
+var arc = d3.svg.arc()
+    .outerRadius(radius - 10)
+    .innerRadius(0);
+
+var labelArc = d3.svg.arc()
+    .outerRadius(radius - 40)
+    .innerRadius(radius - 40);
+
+var pie = d3.layout.pie()
+    .sort(null)
+    .value(function(d) { return d.value; });
+
+
+// var zoom = d3.behavior.zoom()
+//     .scaleExtent([1, 5])
+//     .on("zoom", zoomed);
+
+
+// var drag = d3.behavior.drag()
+//     .origin(function(d) { return d; })
+//     .on("dragstart", dragstarted)
+//     .on("drag", dragged)
+//     .on("dragend", dragended);
+
+  var svg_map = d3.select("svg#map")
+                // .call(zoom)
+                ;
+
+var container = svg_map.append("g");
+
+   d3.json("static/data/brexit_topo_short3.json", function(error, topology) {
+    d3.json("static/data/brexit_preload4.json", function(error2, data_preloaded) {
+    if (error) return console.warn(error);
+    if (error2) return console.warn(error);
+
+
+
+    var features = data_preloaded;
+
+
+
+// console.log(features);
+// console.log(topology);
+
+var features2 = topojson.feature(topology, topology.objects.geotheory_uk_2016_eu_referendum_with_ni);
+
+
+
+    var mymap = container.selectAll("path")
+      .data(features.features);
+
+      mymap
+      .transition()
+      .duration(500);
+
+      mymap
+      .enter()
+      .append("path")
+        .attr("d", path)
+        .attr('fill', function(d){ return color_note(d.properties.pct_rmn)})
+        .attr('stroke', '#444')
+        .attr('stroke-width', '0.5px');
+
+          mymap
+          .on('mouseover', function(e) {
+            var data_row = e.properties;
+            // console.log(data_row);
+            d3.select('#departement').html('Secteur : <strong>' +data_row.area + ', (' +data_row.region + ')</strong>');
+            d3.select('#type_etablissement').text('');
+            d3.select('#moyenne').html('Score du remain  : ' + data_row.pct_rmn);
+            d3.select('#nombre_rapports').html('Nombre de votes pour le remain  : ' + data_row.remain);
+            d3.select('#piechart').style('display', 'block');
+            update_pie(data_row.pct_rmn, data_row.pct_lev);
+          })
+          // .on('click', function(e) {
+          //   var data_row = e.properties;
+          //   d3.select('#departement').html('Département : <strong>' +data_row.area + '</strong>');
+          //   d3.select('#type_etablissement').text('');
+          //   d3.select('#moyenne').html('Score du remain  : ' + data_row.pct_rmn);
+          //   d3.select('#nombre_rapports').html('Nombre de votes pour le remain  : ' + data_row.remain);
+          // })
+          ;
+
+d3.select("#scalemap")
+.on('click', function(d){
+mymap
+.data(features2.features);
+
+mymap
+.transition()
+.duration(1500)
+.attr("d", path2);
+});
+
+d3.select("#cartogram")
+.on('click', function(d){
+mymap
+.data(features.features);
+
+mymap
+.transition()
+.duration(1500)
+.attr("d", path);
+});
+
+
+makepie(100, 100);
+
+function makepie(remain_data, brexit_data){
+
+sum_electors = remain_data + brexit_data;
+
+
+pie_data = [{"type":"remain","value":remain_data}, {"type":"leave","value":brexit_data}];
+
+
+var svg_pie = d3.select("#svg_pie")
+.attr("width", width_pie)
+    .attr("height", height_pie)
+  .append("g")
+    .attr("transform", "translate(" + width_pie / 2 + "," + height_pie / 2 + ")");
+
+g_pie = svg_pie.selectAll(".arc")
+      .data(pie(pie_data))
+    .enter().append("g")
+      .attr("class", "arc");
+
+  g_pie.append("path")
+      .attr("d", arc)
+      .style("fill", function(d) { return color(d.data.type); });
+
+  g_pie.append("text")
+      .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
+      .attr("dy", ".30em")
+      .text(function(d) { return d.data.type; })
+      .attr('fill', '#eee')
+      .attr('text-anchor', 'middle')
+      .style('font-size', '12px');
+
+
+
+}
+
+
+function update_pie(remain_data, brexit_data){
+
+sum_electors = remain_data + brexit_data;
+
+
+pie_data = [{"type":"remain","value":remain_data}, {"type":"brexit","value":brexit_data}];
+
+
+g_pie.data(pie(pie_data));
+
+  g_pie.select("path")
+  .transition()
+  .duration(0)
+  .attr("d", arc);
+}
+
+  });
+  });
+
+
+// function zoomed() {
+//   container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+// }
+
+
+// function dragstarted(d) {
+//   d3.event.sourceEvent.stopPropagation();
+//   d3.select(this).classed("dragging", true);
+// }
+
+// function dragged(d) {
+//   d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+// }
+
+// function dragended(d) {
+//   d3.select(this).classed("dragging", false);
+// }
+
+
+
+
+</script>
+
+
+</body>
+</html>
